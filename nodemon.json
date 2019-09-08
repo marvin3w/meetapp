@@ -1,5 +1,9 @@
 {
   "execMap": {
     "js": "sucrase-node"
-  }
+  },
+  "events": {
+    "restart": "fuser -k 3333/tcp"
+  },
+  "delay": "1500"
 }
