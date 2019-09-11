@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import routes from './routes';
 
 import './database';
@@ -13,10 +14,10 @@ class App {
 
   middlewares() {
     this.server.use(express.json());
-
-    // Expected termination
-    // process.once('SIGINT', () => this.server.stop());
-    // process.once('SIGTERM', () => this.server.stop());
+    this.server.use(
+      '/files',
+      express.static(path.resolve(__dirname, '..', 'tmp', 'uploads'))
+    );
   }
 
   routes() {
