@@ -20,6 +20,17 @@ class SubscriptionController {
 
     return res.json(subscription);
   }
+
+  // async index(req, res) {
+  //   return res.json(meetups);
+  // }
+
+  // async delete(req, res) {
+
+  //   subscription.destroy();
+
+  //   return res.status(200).json({ success: 'Successfully deleted Meetup.' });
+  // }
 }
 
 export default new SubscriptionController();

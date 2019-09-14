@@ -57,7 +57,7 @@ class MeetupController {
       return res.status(400).json({ error: "Can't update past meetups." });
     }
 
-    await meetup.update({ ...req.body });
+    await meetup.update(...req.body);
 
     return res.json(meetup);
   }
@@ -107,7 +107,7 @@ class MeetupController {
       return res.status(400).json({ error: "Can't delete past meetups." });
     }
 
-    meetup.destroy();
+    await meetup.destroy();
 
     return res.status(200).json({ success: 'Successfully deleted Meetup.' });
   }
