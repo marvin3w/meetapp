@@ -4,21 +4,29 @@ import Subscription from '../models/Subscription';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
 
+import Mail from '../../lib/Mail';
+
 class SubscriptionController {
   async store(req, res) {
     const user = await User.findByPk(req.userId);
-    const meetup = await Meetup.findByPk(req.params.meetupId);
+    const meetup = await Meetup.findByPk(req.params.meetupId, {
+      include: [
+        {
+          model: User,
+          as: 'creator',
+          attributes: ['id', 'name', 'email'],
+        },
+      ],
+    });
 
-    if (user.id === meetup.user_id) {
+    if (meetup.user_id === req.userId) {
       return res
         .status(400)
-        .json({ error: 'The event creator cannot register for it' });
+        .json({ error: "Can't subscribe to you own meetups" });
     }
 
     if (meetup.past) {
-      return res
-        .status(400)
-        .json({ error: 'You cannot sign up for previous meetings.' });
+      return res.status(400).json({ error: "Can't subscribe to past meetups" });
     }
 
     const checkDate = await Subscription.findOne({
@@ -45,6 +53,17 @@ class SubscriptionController {
     const subscription = await Subscription.create({
       user_id: user.id,
       meetup_id: meetup.id,
+    });
+
+    await Mail.sendMail({
+      to: `${meetup.creator.name} <${meetup.creator.email}>`,
+      subject: 'Inscrição feita',
+      template: 'subscription',
+      context: {
+        creator: meetup.creator.name,
+        title: meetup.title,
+        user: user.name,
+      },
     });
 
     return res.json(subscription);
